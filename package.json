@@ -6,7 +6,7 @@
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"build": "tsc -b .",
-		"discord": "npm run build && node --http-parser=legacy dist/test/discordGen.js"
+		"discord": "npm run build && node --http-parser=legacy dist/sample/discord_account_generator.js"
 	},
 	"keywords": [],
 	"author": "",
