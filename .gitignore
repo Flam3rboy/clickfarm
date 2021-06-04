@@ -1,0 +1,9 @@
+solveCaptcha*
+solveRCaptcha*
+getAnticaptchaToken*
+node_modules/
+test*
+tokens*
+.DS_STORE
+config.json
+dist/
