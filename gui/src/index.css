@@ -1,0 +1,72 @@
+body {
+	margin: 0;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans",
+		"Droid Sans", "Helvetica Neue", sans-serif;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+code {
+	font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+}
+
+body,
+#root,
+#root > div,
+html {
+	height: 100%;
+}
+
+.MuiDrawer-paper {
+	position: relative !important;
+}
+
+.MuiToolbar-gutters {
+	padding-left: 16px !important;
+}
+
+.MuiDrawer-minimized {
+	max-width: 60px;
+}
+
+.MuiDrawer-paperAnchorDockedLeft {
+	border-right: 0 !important;
+}
+
+.MuiListItemIcon-root {
+	min-width: 50px !important;
+}
+
+.Mui-Chip-colorSuccess {
+	background-color: rgba(0, 255, 30, 0.283) !important;
+	color: #016d01 !important;
+}
+
+.MuiGridListTile-tile {
+	margin: 5px;
+}
+
+.MuiPaper-elevation1 {
+	margin: 1px;
+}
+
+@media (min-width: 800px) {
+	.MuiContainer-maxWidthMd {
+		max-width: 800px;
+	}
+}
+
+.page.accounts {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+}
+
+.page.accounts .toolbar {
+	display: flex;
+	overflow-x: auto;
+}
+
+.page.accounts .toolbar > * {
+	margin: 0 0.3rem;
+}
