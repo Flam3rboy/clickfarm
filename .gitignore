@@ -1,5 +1,6 @@
 solveCaptcha*
 solveRCaptcha*
+AntiCaptchaTrial.ts
 getAnticaptchaToken*
 node_modules/
 test*
@@ -7,3 +8,5 @@ tokens*
 .DS_STORE
 config.json
 dist/
+result.txt
+anticaptcha-extension

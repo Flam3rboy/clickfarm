@@ -8,20 +8,11 @@
 			"sourceMaps": true,
 			"type": "node",
 			"request": "launch",
-			"name": "Discord",
-			"program": "${workspaceFolder}/dist/test/discordGen.js",
+			"name": "Server",
+			"program": "${workspaceFolder}/dist/server.js",
 			"preLaunchTask": "tsc: build - tsconfig.json",
 			"outFiles": ["${workspaceFolder}/dist/**/*.js"],
 			"runtimeArgs": ["--http-parser=legacy"]
-		},
-		{
-			"sourceMaps": true,
-			"type": "node",
-			"request": "launch",
-			"name": "Twitch",
-			"program": "${workspaceFolder}/dist/test/twitch.js",
-			"preLaunchTask": "tsc: build - tsconfig.json",
-			"outFiles": ["${workspaceFolder}/dist/**/*.js"]
 		}
 	]
 }
