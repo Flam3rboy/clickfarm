@@ -1,18 +1,25 @@
 import { EventEmitter } from "events";
 import { ProxyManager } from "./ProxyManager";
+import { Tor } from "./Tor";
+import { MobileProxy } from "./MobileProxy";
+import { makeid } from "../util/Util";
+import { ProxyConfig, ProxyType } from "../types/Proxy";
 
-export class ProxyPool extends EventEmitter {
+export default class ProxyPool extends EventEmitter {
 	private used: ProxyManager[] = [];
 	private free: ProxyManager[] = [];
 	private portCounter = 9000;
+	public uuid: string;
+	public type: ProxyType;
 
 	constructor(private holds: typeof ProxyManager, private poolSize: number = 1) {
 		super();
+		if (!this.uuid) this.uuid = makeid();
 		this.poolSize = Math.min(holds.available, poolSize);
+		this.type = this.holds.type;
 	}
 
 	async init() {
-		this.holds;
 		let promises = [];
 		for (let i = 0; i < this.poolSize; i++) {
 			promises.push(this.createProxy());
@@ -46,5 +53,28 @@ export class ProxyPool extends EventEmitter {
 
 		this.used.push(proxy);
 		return proxy;
+	}
+
+	getConfig(): ProxyConfig {
+		return {
+			type: this.type,
+			uuid: this.uuid,
+			poolSize: this.poolSize,
+			// @ts-ignore
+			entries: this.list || [],
+		};
+	}
+
+	static fromConfig(config: ProxyConfig): ProxyPool {
+		if (config.type === "list") {
+			// @ts-ignore
+			return Object.assign(new require("./ProxyList").ProxyList(config.entries || []), { uuid: config.uuid });
+		}
+		// @ts-ignore
+		if (config.type === "tor") return Object.assign(new ProxyPool(Tor, config.poolSize), { uuid: config.uuid });
+		if (config.type === "huawei-lte")
+			return Object.assign(new ProxyPool(MobileProxy, config.poolSize), { uuid: config.uuid });
+
+		throw new Error("invalid type");
 	}
 }

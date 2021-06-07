@@ -1,4 +1,5 @@
 import fs from "fs";
+
 const exitHook = require("async-exit-hook");
 
 Array.prototype.remove = function <T>(this: T[], elem: T): T[] {
@@ -63,8 +64,6 @@ declare global {
 	}
 }
 
-export function init() {} // needed to actually import the file to circumenvent typescript optimizations
-
 export function objectAsBase64(e: any) {
 	return <string>Buffer.from(JSON.stringify(e)).toString("base64");
 }
@@ -108,7 +107,7 @@ export async function tempDir() {
 	return result;
 }
 
-export function makeid(length: number) {
+export function makeid(length: number = 20) {
 	var result = "";
 	var characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 	var charactersLength = characters.length;
@@ -134,4 +133,9 @@ const usernames = fs.readFileSync(__dirname + "/../../assets/Lists/usernames.txt
 
 export function randomUsername() {
 	return <string>usernames.random();
+}
+
+export function pathExists(path: string) {
+	if (fs.existsSync(path)) return path;
+	return null;
 }

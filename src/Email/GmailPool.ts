@@ -1,15 +1,24 @@
 import { makeid } from "../util/Util";
 import { EmailDummyProvider } from "./EmailDummyProvider";
 import { EmailPool } from "./EmailPool";
+import crypto from "crypto";
+import { GmailProvider } from "./GmailProvider";
 
 export class GmailPool extends EmailPool {
-	getProvider(username?: string) {
+	constructor(public provider: GmailProvider) {
+		super(provider);
+		this.type = "gmail";
+	}
+
+	getProvider(username?: string, plusTrick?: boolean) {
 		if (username) return new EmailDummyProvider(this.provider, username);
-		const id = makeid(5);
-		const name = this.provider.username;
-		// .split("")
-		// .map((x) => (Math.random() > 0.5 ? x + "." : x))
-		// .join("");
-		return new EmailDummyProvider(this.provider, `${name}+${id}`);
+		const id = plusTrick ? `+${makeid(5)}` : "";
+		var name = this.provider.username
+			.split("")
+			.map((x) => (crypto.randomInt(0, 2) ? x + "." : x))
+			.join("");
+		if (name.endsWith(".")) name = name.slice(0, -1);
+
+		return new EmailDummyProvider(this.provider, `${name}${id}`);
 	}
 }

@@ -1,13 +1,15 @@
 import { ProxyManager } from "./ProxyManager";
 import { ChildProcess, spawn } from "child_process";
 import { sleep, tempDir } from "../util/Util";
+import { ProxyType } from "../types/Proxy";
 
 export class Tor extends ProxyManager {
 	private process?: ChildProcess;
 	private intalized: boolean;
+	public static type: ProxyType = "tor";
 
-	constructor(port: number) {
-		super("socks5", "localhost", port);
+	constructor(public port: number) {
+		super("socks5://localhost:" + port);
 	}
 
 	public static get available() {

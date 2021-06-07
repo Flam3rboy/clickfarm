@@ -1,4 +1,3 @@
-import { solveCaptcha } from "../Captcha/solveCaptcha";
 import fs from "fs/promises";
 import { Account, AccountOptions } from "./Account";
 import { objectAsBase64, randomUserAgent, sleep, sleepRandom } from "../util/Util";
@@ -6,21 +5,27 @@ import { UAParser } from "ua-parser-js";
 import { request, RequestOptions } from "../util/request";
 import fetch from "node-fetch";
 import FileType from "file-type";
-import { ProxyManager } from "../Proxy/ProxyManager";
-import { getAnticaptchaToken } from "../Captcha/getAnticaptchaToken";
 import "missing-native-js-functions";
-import { Browser, HTTPRequest, Page } from "puppeteer";
+import { Browser, HTTPRequest } from "puppeteer-core";
 import useProxy from "puppeteer-page-proxy";
 import WebSocket from "ws";
-// const ac = require("../Captcha/anticaptcha");
-const ac = require("@antiadmin/anticaptchaofficial");
+import { AccountSettings } from "../types/Account";
 
-export type DiscordAccountOptions = AccountOptions & { token?: string; proxy?: ProxyManager; init?: boolean };
+export type DiscordAccountOptions = AccountOptions & {
+	token?: string;
+	init?: boolean;
+	user_id?: string;
+	cookie?: string;
+	fingerprint?: string;
+	useragent?: string;
+	science_token?: string;
+};
 
 export type DiscordFetchOptions = RequestOptions & { context?: any; fullURL?: boolean };
 
 export class DiscordAccount extends Account {
 	token?: string;
+	user_id?: string;
 	cookie?: string;
 	fingerprint: string;
 	intialized: Promise<any>;
@@ -46,7 +51,6 @@ export class DiscordAccount extends Account {
 	client_uuid: string = "MgDGI4DI4grrNxdWS7fyLXYBAAABAAAA";
 	science_token: string;
 	avatarBase64?: string;
-	proxy?: ProxyManager;
 	connection?: WebSocket;
 
 	constructor(props: DiscordAccountOptions) {
@@ -67,6 +71,23 @@ export class DiscordAccount extends Account {
 	get xSuperPropertiesBase64() {
 		return btoa(JSON.stringify(this.xSuperProperties));
 		return objectAsBase64(this.xSuperProperties);
+	}
+
+	getSettings(): AccountSettings & {
+		user_id?: string;
+		token?: string;
+		cookie?: string;
+		fingerprint?: string;
+		useragent?: string;
+	} {
+		return {
+			...super.getSettings(),
+			user_id: this.user_id,
+			token: this.token,
+			cookie: this.cookie,
+			fingerprint: this.fingerprint,
+			useragent: this.useragent,
+		};
 	}
 
 	async init() {
@@ -94,6 +115,7 @@ export class DiscordAccount extends Account {
 	}
 
 	async initFingerprint() {
+		if (this.fingerprint) return;
 		const { res } = await this.fetch("https://discord.com/register", { fullURL: true, res: true });
 		this.cookie = res.headers.get("set-cookie")?.split("; ")?.[0];
 		const { fingerprint } = await this.fetch("/experiments", { context: { location: "Register" } });
@@ -101,7 +123,7 @@ export class DiscordAccount extends Account {
 	}
 
 	initBrowserAgent() {
-		this.useragent = randomUserAgent();
+		if (!this.useragent) this.useragent = randomUserAgent();
 		const uaparser = new UAParser(this.useragent);
 		const browser = uaparser.getBrowser();
 		const os = uaparser.getOS();
@@ -182,7 +204,9 @@ export class DiscordAccount extends Account {
 		console.log("solve", service);
 		switch (service) {
 			case "recaptcha":
-				return solveCaptcha("https://discord.com/", key || "6Lef5iQTAAAAAKeIvIY-DeexoO3gj7ryl9rLMEnn", {
+				return this.captchaProvider?.solve({
+					websiteKey: key || "6Lef5iQTAAAAAKeIvIY-DeexoO3gj7ryl9rLMEnn",
+					websiteURL: "https://discord.com/",
 					agent: this.proxy?.agent,
 					timeout: 300,
 					task: {
@@ -190,7 +214,9 @@ export class DiscordAccount extends Account {
 					},
 				});
 			case "hcaptcha":
-				return solveCaptcha("https://discord.com/", key || "f5561ba9-8f1e-40ca-9b5b-a0b3f719ef34", {
+				return this.captchaProvider?.solve({
+					websiteKey: key || "f5561ba9-8f1e-40ca-9b5b-a0b3f719ef34",
+					websiteURL: "https://discord.com/",
 					agent: this.proxy?.agent,
 					timeout: 300,
 					task: {
@@ -233,16 +259,16 @@ export class DiscordAccount extends Account {
 		emailverify?: boolean;
 		invite?: string;
 	}) {
-		// const context = await browser.createIncognitoBrowserContext();
+		const context = await browser.createIncognitoBrowserContext();
 		try {
-			const page = await browser.newPage();
+			const page = await context.newPage();
 
 			await page.setRequestInterception(true);
 			page.on("request", async (request: HTTPRequest) => {
 				const { authorization } = request.headers();
 				if (authorization) this.token = authorization;
 				if (request.url().endsWith("/science")) {
-					request.abort();
+					// request.abort();
 				} else {
 					if (this.proxy && ["xhr", "fetch", "websocket"].includes(request.resourceType()))
 						useProxy(request, this.proxy.url);
@@ -277,10 +303,15 @@ export class DiscordAccount extends Account {
 			);
 
 			await page.click(`[class*=checkbox] [class*=inputDefault]`);
-			await sleep(60000);
-			console.log("sleep 1min");
+			var emailPromise;
+			if (emailverify) {
+				emailPromise = this.verifyEmail();
+			}
+			await sleep(15000);
+			console.log("sleep 15sec");
 			await page.click(`[type="submit"]`);
 			await page.waitForNavigation();
+			await emailPromise;
 		} catch (e) {
 			console.error(e);
 			throw e;
@@ -314,8 +345,11 @@ export class DiscordAccount extends Account {
 	}
 
 	async register(
-		{ emailverify, invite }: { emailverify?: boolean; invite?: string } = { emailverify: true }
+		{ emailverify, invite, browser }: { emailverify?: boolean; invite?: string; browser?: Browser } = {
+			emailverify: true,
+		}
 	): Promise<void> {
+		if (browser) return this.registerBrowser({ emailverify, invite, browser });
 		const self = this;
 		await this.intialized;
 		console.log("wait 3sec");
@@ -348,7 +382,9 @@ export class DiscordAccount extends Account {
 		var { token } = await this.repeatAction(reg);
 		this.token = token;
 
-		if (this.emailProvider && emailverify) {
+		await this.postRegisterRequests();
+
+		if (this.emailProvider && emailverify && !invite) {
 			await this.verifyEmail();
 		} else {
 			// guest account
@@ -392,6 +428,33 @@ export class DiscordAccount extends Account {
 		this.connection = new WebSocket("wss://gateway.discord.gg/?encoding=json&v=9");
 		this.connection.on("message", (data) => {
 			console.log(data);
+		});
+		this.connection.once("open", () => {
+			this.connection?.send(
+				JSON.stringify({
+					token: this.token,
+					capabilities: 125,
+					properties: {
+						os: "Windows",
+						browser: "Discord Client",
+						release_channel: "stable",
+						client_version: "0.0.263",
+						os_version: "19.6.0",
+						os_arch: "x64",
+						system_locale: "en-US",
+						client_build_number: 86782,
+						client_event_source: null,
+					},
+					presence: { status: "online", since: 0, activities: [], afk: false },
+					compress: false,
+					client_state: {
+						guild_hashes: {},
+						highest_last_message_id: "0",
+						read_state_version: 0,
+						user_guild_settings_version: -1,
+					},
+				})
+			);
 		});
 	}
 
@@ -478,6 +541,7 @@ export class DiscordAccount extends Account {
 
 	async close() {
 		await this.emailProvider?.close();
+		this.connection?.close();
 	}
 }
 

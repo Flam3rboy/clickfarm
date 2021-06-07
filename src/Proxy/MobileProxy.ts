@@ -7,6 +7,7 @@ import httpProxy from "http-proxy";
 import url from "url";
 import net from "net";
 import { sleep } from "../util/Util";
+import { ProxyType } from "../types/Proxy";
 
 var rsaKey: any;
 var cookieHeader = "";
@@ -16,8 +17,11 @@ var localAddress = "192.168.8.100";
 export class MobileProxy extends ProxyManager {
 	private server: http.Server;
 	private static count: number = 0;
+	public port: number = 8080;
+	public static type: ProxyType = "huawei-lte";
+
 	constructor() {
-		super("http", "localhost", 8080);
+		super("http://localhost:8080");
 		MobileProxy.count++;
 	}
 

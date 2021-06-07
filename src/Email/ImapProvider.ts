@@ -8,9 +8,9 @@ export class ImapProvider extends EmailProvider {
 	public client: any;
 
 	constructor(
-		username: string,
-		domain: string,
-		password: string,
+		public username: string,
+		public domain: string,
+		public password: string,
 		opts: { host: string; port: number; secure: boolean; login?: string }
 	) {
 		super(username, domain);

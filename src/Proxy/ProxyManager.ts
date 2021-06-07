@@ -1,14 +1,14 @@
 import ProxyAgent from "proxy-agent";
 import { Agent, AgentOptions } from "agent-base";
 import { EventEmitter } from "events";
+import { ProxyType } from "../types/Proxy";
 
 export class ProxyManager extends EventEmitter {
 	public readonly agent: Agent;
-	public url: string;
+	public static type: ProxyType;
 
-	constructor(public readonly protocol: string, public readonly ip: string, public readonly port: number) {
+	constructor(public url: string) {
 		super();
-		this.url = `${protocol}://${ip}:${port}`;
 		this.agent = new ProxyAgent(this.url);
 	}
 
@@ -19,7 +19,8 @@ export class ProxyManager extends EventEmitter {
 	async init(): Promise<any> {}
 
 	async release(): Promise<ProxyManager> {
-		throw new Error("not implemented");
+		this.emit("released", this);
+		return this;
 	}
 
 	async close() {}
