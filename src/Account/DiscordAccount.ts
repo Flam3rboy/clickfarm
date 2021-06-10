@@ -250,15 +250,7 @@ export class DiscordAccount extends Account {
 		} while (error);
 	}
 
-	async registerBrowser({
-		browser,
-		emailverify,
-		invite,
-	}: {
-		browser: Browser;
-		emailverify?: boolean;
-		invite?: string;
-	}) {
+	async registerBrowser({ browser, invite }: { browser: Browser; invite?: string }) {
 		const context = await browser.createIncognitoBrowserContext();
 		try {
 			const page = await context.newPage();
@@ -268,7 +260,7 @@ export class DiscordAccount extends Account {
 				const { authorization } = request.headers();
 				if (authorization) this.token = authorization;
 				if (request.url().endsWith("/science")) {
-					// request.abort();
+					request.abort();
 				} else {
 					if (this.proxy && ["xhr", "fetch", "websocket"].includes(request.resourceType()))
 						useProxy(request, this.proxy.url);
@@ -303,15 +295,10 @@ export class DiscordAccount extends Account {
 			);
 
 			await page.click(`[class*=checkbox] [class*=inputDefault]`);
-			var emailPromise;
-			if (emailverify) {
-				emailPromise = this.verifyEmail();
-			}
 			await sleep(15000);
 			console.log("sleep 15sec");
 			await page.click(`[type="submit"]`);
 			await page.waitForNavigation();
-			await emailPromise;
 		} catch (e) {
 			console.error(e);
 			throw e;
@@ -344,12 +331,8 @@ export class DiscordAccount extends Account {
 		await this.repeatAction(verify);
 	}
 
-	async register(
-		{ emailverify, invite, browser }: { emailverify?: boolean; invite?: string; browser?: Browser } = {
-			emailverify: true,
-		}
-	): Promise<void> {
-		if (browser) return this.registerBrowser({ emailverify, invite, browser });
+	async register({ invite, browser }: { invite?: string; browser?: Browser } = {}): Promise<void> {
+		if (browser) return this.registerBrowser({ invite, browser });
 		const self = this;
 		await this.intialized;
 		console.log("wait 3sec");

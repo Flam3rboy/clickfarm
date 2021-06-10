@@ -41,4 +41,5 @@ export async function getBrowser() {
 		devtools: config.browser.devtools ?? false,
 		slowMo: config.browser.slowMo ?? 100,
 	});
+	return browser;
 }

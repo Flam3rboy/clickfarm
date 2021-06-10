@@ -106,8 +106,10 @@ export async function tempDir() {
 	tempdirs.push(result);
 	return result;
 }
+var idCounter = 0;
 
-export function makeid(length: number = 20) {
+export function makeid(length?: number): string {
+	if (!length) return String(idCounter++);
 	var result = "";
 	var characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 	var charactersLength = characters.length;

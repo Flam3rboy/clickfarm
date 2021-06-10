@@ -11,6 +11,7 @@ import { EmailConfig } from "../types/Email";
 import { ProxyConfig } from "../types/Proxy";
 import { CaptchaConfig } from "../types/Captcha";
 import { AccountConfig } from "../types/Account";
+import { Worker } from "./Worker";
 
 const configPath = path.join(__dirname, "..", "..", "config.json");
 
@@ -24,6 +25,7 @@ var config: Config = {
 		user_agents: [],
 		args: [],
 	},
+	workers_count: 1,
 };
 
 export function init() {
@@ -33,6 +35,10 @@ export function init() {
 	db.accounts = config.accounts.map((x) => Account.fromConfig(x));
 	db.captchas = config.captchas.map((x) => CaptchaProvider.fromConfig(x));
 	db.actions = config.actions.map((x) => Action.fromConfig(x));
+
+	for (var i = 0; i < config.workers_count; i++) {
+		db.workers.push(new Worker());
+	}
 }
 
 try {
@@ -67,4 +73,5 @@ export interface Config {
 		devtools?: boolean;
 		slowMo?: number;
 	};
+	workers_count: number;
 }

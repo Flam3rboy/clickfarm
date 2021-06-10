@@ -34,6 +34,7 @@ export abstract class Account {
 	created_at: Date;
 
 	constructor(props: AccountOptions) {
+		if (props.dateofbirth) props.dateofbirth = new Date(props.dateofbirth);
 		if (!props.dateofbirth) props.dateofbirth = new Date(Date.now() - YEAR * 18 - Math.random() * 40 * YEAR); // random date between 18 and 58
 		if (!props.password) props.password = makeid(10);
 		if (!props.username) props.username = randomUsername();
@@ -90,14 +91,22 @@ export abstract class Account {
 	}
 
 	static fromConfig(config: AccountConfig) {
-		const Provider =
-			config.type === "discord"
-				? require("./DiscordAccount").DiscordAccount
-				: require("./TwitchAccount").TwitchAccount;
+		const Provider = getProvider(config.type);
 		// const emailProvider = require("../util/db")
 		// 	.db.emails.find((x: EmailPool) => x.uuid === config.settings.email_uuid)
 		// 	?.getProvider(config.settings.email_username);
 
 		return new Provider({ ...config.settings, ...config /*, emailProvider*/ });
+	}
+}
+
+function getProvider(type: Platform) {
+	switch (type) {
+		case "discord":
+			return require("./DiscordAccount").DiscordAccount;
+		case "twitch":
+			return require("./TwitchAccount").TwitchAccount;
+		default:
+			throw new Error("Account type not supported");
 	}
 }
