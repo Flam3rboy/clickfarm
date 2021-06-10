@@ -1,19 +1,20 @@
 import React, { createContext, Dispatch, ReactNode, SetStateAction, useState } from "react";
 import "missing-native-js-functions";
-import { Account } from "./types";
+import { Account, Worker, Email } from "./types";
 
-const InitialState: InitalState = {
+const InitialState: InitalStateContext = {
 	darkMode: true,
 };
 
-interface InitalState {
+export interface InitalStateContext {
 	darkMode?: boolean;
 	accounts?: Account[];
+	workers?: Worker[];
+	emails?: Email[];
 }
 
-export const StoreContext =
-	// @ts-ignore
-	createContext<(InitialState | Dispatch<SetStateAction<InitialState>>)[]>(null);
+// @ts-ignore
+export const StoreContext = createContext<[InitalStateContext, Dispatch<SetStateAction<InitalStateContext>>]>(null);
 
 export const Store = ({ children }: { children: ReactNode }) => {
 	const [state, setState] = useState(InitialState);

@@ -1,4 +1,4 @@
-export async function request(path: string, options?: RequestInit) {
+export async function request(path: string, options?: { body?: any } & RequestInit) {
 	if (!options) options = {};
 	if (!options.headers) options.headers = {};
 	if (options.body && typeof options.body === "object") {

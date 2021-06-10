@@ -91,7 +91,6 @@ export default function Sidebar() {
 						</SvgIcon>
 					}
 				/>
-				<ListItemLink to="/actions" primary="Actions" icon={<AssignmentIcon />} />
 			</List>
 		</Drawer>
 	);
