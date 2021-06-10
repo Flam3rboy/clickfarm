@@ -1,6 +1,6 @@
 # Clickfarm
 
-A modular account automation tool for multiple platforms.
+A modular account automation tool for multiple platforms with a GUI:
 
 ## Installation
 

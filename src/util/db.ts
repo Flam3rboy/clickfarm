@@ -4,6 +4,7 @@ import { EmailPool } from "../Email";
 import { Worker } from "./Worker";
 import { Action } from "./Action";
 import ProxyPool from "../Proxy/ProxyPool";
+import { EventEmitter } from "events";
 
 export const db: DB = {
 	emails: [],
@@ -12,7 +13,11 @@ export const db: DB = {
 	accounts: [],
 	workers: [],
 	actions: [],
+	events: new EventEmitter(),
 };
+
+// @ts-ignore
+global.db = db;
 
 interface DB {
 	emails: EmailPool[];
@@ -21,4 +26,5 @@ interface DB {
 	accounts: (DiscordAccount | TwitchAccount)[];
 	workers: Worker[];
 	actions: Action[];
+	events: EventEmitter;
 }
