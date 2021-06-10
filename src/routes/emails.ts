@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { check } from "lambert-server";
+import { check, HTTPError } from "lambert-server";
 import { db } from "../util/db";
-import { EmailProvider } from "../Email/EmailProvider";
 import { EmailConfig } from "../types/Email";
+import { EmailPool } from "../Email";
 
 const router = Router();
 
@@ -29,7 +29,10 @@ router.post(
 	async (req, res) => {
 		const body = req.body as EmailConfig;
 
-		const provider = EmailProvider.fromConfig(body);
+		const exists = db.emails.find((x) => x.provider.username === req.body.username && x.type === body.type);
+		if (exists) throw new HTTPError("Email already exists");
+
+		const provider = EmailPool.fromConfig(body);
 		await provider.init();
 		db.emails.push(provider);
 

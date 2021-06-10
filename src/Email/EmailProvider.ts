@@ -57,8 +57,9 @@ export abstract class EmailProvider extends EventEmitter {
 
 	static fromConfig(config: EmailConfig) {
 		if (config.type === "gmail") {
-			// @ts-ignore
-			return new require("./GmailProvider").GmailProvider(config.username, config.password);
+			const provider = require("./GmailProvider").GmailProvider;
+
+			return new provider(config.username, config.password);
 		}
 
 		// @ts-ignore

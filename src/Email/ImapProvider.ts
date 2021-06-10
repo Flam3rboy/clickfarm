@@ -1,3 +1,5 @@
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+
 import { EmailProvider } from "./EmailProvider";
 // @ts-ignore
 import ImapClient from "emailjs-imap-client";
@@ -14,6 +16,10 @@ export class ImapProvider extends EmailProvider {
 		opts: { host: string; port: number; secure: boolean; login?: string }
 	) {
 		super(username, domain);
+		this.host = opts.host;
+		this.port = opts.port;
+		this.login = opts.login;
+		this.secure = opts.secure;
 		this.client = new ImapClient(opts.host, opts.port, {
 			auth: { user: opts.login || username, pass: password },
 			useSecureTransport: opts.secure,
@@ -21,9 +27,11 @@ export class ImapProvider extends EmailProvider {
 		});
 		this.client.onerror = console.error;
 		this.client.onupdate = this.newMessage;
+		this.type = "imap";
 	}
 
 	async init() {
+		if (this.client._state) return;
 		await this.client.connect();
 		await this.client.selectMailbox("INBOX");
 	}

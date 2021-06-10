@@ -28,7 +28,7 @@ var config: Config = {
 	workers_count: 1,
 };
 
-export function init() {
+export async function init() {
 	config = JSON.parse(fs.readFileSync(configPath, { encoding: "utf8" }));
 	db.proxies = config.proxies.map((x) => ProxyPool.fromConfig(x));
 	db.emails = config.emails.map((x) => EmailPool.fromConfig(x));
@@ -39,6 +39,8 @@ export function init() {
 	for (var i = 0; i < config.workers_count; i++) {
 		db.workers.push(new Worker());
 	}
+
+	await Promise.all([...db.emails.map((x) => x.init()), ...db.proxies.map((x) => x.init())]);
 }
 
 try {

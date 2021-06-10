@@ -1,3 +1,4 @@
+// @ts-nocheck
 import fetch, { Response } from "node-fetch";
 import { Account, AccountOptions } from "./Account";
 import { request, RequestOptions } from "../util/request";

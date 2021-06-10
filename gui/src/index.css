@@ -128,3 +128,7 @@ html {
 .MuiSnackbar-anchorOriginTopRight {
 	left: auto !important;
 }
+
+.dialog-add-email .MuiDialog-paper {
+	min-width: 300px;
+}

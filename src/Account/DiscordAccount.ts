@@ -13,7 +13,6 @@ import { AccountSettings } from "../types/Account";
 
 export type DiscordAccountOptions = AccountOptions & {
 	token?: string;
-	init?: boolean;
 	user_id?: string;
 	cookie?: string;
 	fingerprint?: string;
@@ -56,7 +55,6 @@ export class DiscordAccount extends Account {
 	constructor(props: DiscordAccountOptions) {
 		super(props);
 		this.initBrowserAgent();
-		if (props.init !== false) this.intialized = this.init();
 	}
 
 	get stringofbirth() {
@@ -91,7 +89,9 @@ export class DiscordAccount extends Account {
 	}
 
 	async init() {
-		return Promise.all([this.initFingerprint(), this.initAvatar(), this.emailProvider?.init()]);
+		if (this.intialized) return this.intialized;
+		this.intialized = Promise.all([this.initFingerprint(), this.initAvatar(), this.emailProvider?.init()]);
+		return this.intialized;
 	}
 
 	async initAvatar() {
@@ -251,6 +251,7 @@ export class DiscordAccount extends Account {
 	}
 
 	async registerBrowser({ browser, invite }: { browser: Browser; invite?: string }) {
+		await this.init();
 		const context = await browser.createIncognitoBrowserContext();
 		try {
 			const page = await context.newPage();
@@ -367,7 +368,7 @@ export class DiscordAccount extends Account {
 
 		await this.postRegisterRequests();
 
-		if (this.emailProvider && emailverify && !invite) {
+		if (this.emailProvider && !invite) {
 			await this.verifyEmail();
 		} else {
 			// guest account

@@ -36,6 +36,7 @@ export default function Dashboard() {
 	useEffect(() => {
 		request(`/accounts`).then((accounts) => setContext({ accounts }));
 		request(`/workers`).then((workers) => setContext({ workers }));
+		request(`/emails`).then((emails) => setContext({ emails }));
 	}, []);
 
 	return (

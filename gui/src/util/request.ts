@@ -1,4 +1,4 @@
-export async function request(path: string, options?: { body?: any } & RequestInit) {
+export async function request(path: string, options?: any) {
 	if (!options) options = {};
 	if (!options.headers) options.headers = {};
 	if (options.body && typeof options.body === "object") {
@@ -10,7 +10,8 @@ export async function request(path: string, options?: { body?: any } & RequestIn
 
 	const response = await fetch(`http://localhost:4932${path}`, options);
 	const json = await response.json();
-	if (response.status !== 200) throw new Error(json);
+	console.log(json);
+	if (response.status !== 200) throw json.message;
 
 	return json;
 }
