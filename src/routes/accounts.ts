@@ -25,6 +25,7 @@ router.post("/generate", check({ count: Number, type: String }), async (req, res
 		db.accounts.push(account);
 		ids.push(account.uuid);
 	}
+	await Promise.all(db.accounts.map((x) => x.intialized));
 
 	return res.json(ids);
 });
