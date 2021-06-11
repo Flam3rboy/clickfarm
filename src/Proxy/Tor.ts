@@ -30,8 +30,12 @@ export class Tor extends ProxyManager {
 
 		const dir = await tempDir();
 		this.process = spawn("tor", `--SocksPort ${this.port} --DataDirectory ${dir}`.split(" "));
+
 		await new Promise((resolve, reject) => {
 			let history = "";
+			this.process?.on("error", () => {
+				reject("You need to install TOR and add it to your PATH");
+			});
 			this.process?.stdout?.on("data", (log) => {
 				log = log.toString();
 				console.log(log);

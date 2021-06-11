@@ -12,8 +12,9 @@ export class ProxyList extends ProxyPool {
 
 	async createProxy() {
 		const entry = this._list.random();
-		this._list.remove(entry);
 		if (!entry) throw new Error("no proxy available");
+
+		this._list.remove(entry);
 		const proxy = new ProxyManager(entry);
 
 		proxy.on("released", async (newProxy: ProxyManager) => {
