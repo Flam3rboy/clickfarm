@@ -50,6 +50,7 @@ function start() {
 		res.sendFile(path.join(__dirname, "..", "gui", "build", "index.html"));
 	});
 	app.listen(4932, async () => {
+		console.log("Server started on http://localhost:4932");
 		await open(`http://localhost:4932`);
 	});
 }
