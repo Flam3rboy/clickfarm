@@ -10,10 +10,11 @@ A modular account automation tool for multiple platforms with a web dashboard:
 
 ## Installation
 
-1. [Download](https://github.com/Flam3rboy/clickfarm/archive/refs/heads/master.zip) the repository
-2. Unzip it
-3. Go into the directory ``executable`` and execute the corresponding binary (Windows: ``clickfarm-win.exe``)
-4. Open your local dashboard http://localhost:4932
+1. Download clickfarm: 
+[Windows](https://github.com/Flam3rboy/clickfarm/raw/master/executable/clickfarm-win) |
+[Linux](https://github.com/Flam3rboy/clickfarm/raw/master/executable/clickfarm-linux) |
+[MacOS](https://github.com/Flam3rboy/clickfarm/raw/master/executable/clickfarm-macos)
+2. Open your local dashboard at http://localhost:4932
 
 ## Disclaimer
 
