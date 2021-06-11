@@ -1,5 +1,4 @@
 import express from "express";
-import { Server } from "lambert-server";
 import path from "path";
 import process from "process";
 import { db } from "./util";
@@ -10,6 +9,8 @@ import captchas from "./routes/captchas";
 import emails from "./routes/emails";
 import proxies from "./routes/proxies";
 import workers from "./routes/workers";
+import bodyParser from "body-parser";
+import "express-async-errors";
 
 export function sendError(error: any) {
 	try {
@@ -21,23 +22,36 @@ export function sendError(error: any) {
 process.on("uncaughtException", sendError);
 process.on("unhandledRejection", sendError);
 
-async function start() {
-	const server = new Server({ jsonBody: true, port: 4932 });
-	server.app.use((req, res, next) => {
+function start() {
+	const app = express();
+	app.use((req, res, next) => {
 		res.set("Access-Control-Allow-Origin", "*");
 		res.set("Access-Control-Allow-Headers", "*");
 		res.set("Access-Control-Allow-Methods", "*");
 		next();
 	});
-	server.app.use(express.static(path.join(__dirname, "..", "gui", "build")));
-	server.app.use(accounts);
-	server.app.use(actions);
-	server.app.use(captchas);
-	server.app.use(emails);
-	server.app.use(proxies);
-	server.app.use(workers);
-	await server.start();
-	await open(`http://localhost:4932`);
+	app.use(express.static(path.join(__dirname, "..", "gui", "build")));
+	app.use(bodyParser.json());
+	app.use("/accounts", accounts);
+	app.use("/actions", actions);
+	app.use("/captchas", captchas);
+	app.use("/emails", emails);
+	app.use("/proxies", proxies);
+	app.use("/workers", workers);
+	// @ts-ignore
+	app.use((error, req, res, next) => {
+		if (error) {
+			res.status(400).json({ message: error.toString() });
+			return sendError(error);
+		}
+		return next(error);
+	});
+	app.get("*", function (req, res) {
+		res.sendFile(path.join(__dirname, "..", "gui", "build", "index.html"));
+	});
+	app.listen(4932, async () => {
+		await open(`http://localhost:4932`);
+	});
 }
 
 start();
