@@ -96,7 +96,7 @@ export async function tempDir() {
 			tempPath = "/tmp/nodetemp";
 			break;
 		case "win32":
-			tempPath = "%Temp%\\nodetemp";
+			tempPath = "c:windows\\temp\\nodetemp";
 			break;
 		default:
 			tempPath = __dirname;
