@@ -24,7 +24,7 @@ export default function Overview() {
 
 	return (
 		<>
-			<Container maxWidth="md">
+			<Container maxWidth="md" className="page overview">
 				<GridList cellHeight="auto" cols={3}>
 					<GridListTile>
 						<Card>

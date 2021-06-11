@@ -1,7 +1,7 @@
 import { CssBaseline } from "@material-ui/core";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import { HashRouter as Router, Switch, Route } from "react-router-dom";
 import Overview from "../pages/Overview";
 import { ThemeProvider } from "@material-ui/styles";
 import { createMuiTheme } from "@material-ui/core/styles";

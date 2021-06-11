@@ -135,3 +135,7 @@ html {
 .MuiDialog-paper {
 	min-width: 300px;
 }
+
+.page.overview .MuiGridList-root {
+	overflow: hidden;
+}

@@ -8,6 +8,7 @@
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"build": "tsc -b .",
+		"pkg": "npm run build && pkg .",
 		"start": "npm run build && node dist/Server.js",
 		"circular-dependency": "npx madge --circular --extensions ts ./src/",
 		"discord": "npm run build && node --http-parser=legacy dist/sample/discord_account_generator.js"
@@ -50,9 +51,11 @@
 		"@types/uuid": "^8.3.0",
 		"async-exit-hook": "^2.0.1",
 		"axios": "^0.21.1",
+		"body-parser": "^1.19.0",
 		"btoa": "^1.2.1",
 		"emailjs-imap-client": "^3.1.0",
 		"express": "^4.17.1",
+		"express-async-errors": "^3.1.1",
 		"fast-xml-parser": "^3.17.5",
 		"file-type": "^16.0.1",
 		"http-parser-js": "^0.5.2",
