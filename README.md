@@ -11,7 +11,7 @@ A modular account automation tool for multiple platforms with a web dashboard:
 ## Installation
 
 1. Download clickfarm: 
-- [Windows](https://github.com/Flam3rboy/clickfarm/raw/master/executable/clickfarm-win) (You might get a popup "Windows protected your pc", proceed by clicking on "Run anyway", this is caused because this program is not from a certified developer)
+- [Windows](https://github.com/Flam3rboy/clickfarm/raw/master/executable/clickfarm-win.exe) (You might get a popup "Windows protected your pc", proceed by clicking on "Run anyway", this is caused because this program is not from a certified developer)
 - [Linux](https://github.com/Flam3rboy/clickfarm/raw/master/executable/clickfarm-linux) (Execute it in the terminal)
 - [MacOS](https://github.com/Flam3rboy/clickfarm/raw/master/executable/clickfarm-macos) (Open Terminal by searching in spotlight, enter ``chmod +x `` and drag an drop the file into the terminal)
 2. Execute it by double clicking on the file
