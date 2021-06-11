@@ -28,9 +28,10 @@ router.post("/", check({ poolSize: Number, $list: [String], type: String }), asy
 	res.json({ success: true, ...pool.getConfig() });
 });
 
-router.delete("/:id", (req, res) => {
+router.delete("/:id", async (req, res) => {
 	const proxy = db.proxies.find((x) => x.uuid === req.params.id);
 	if (!proxy) throw new HTTPError("proxy not found");
+	await proxy.close();
 	db.proxies.remove(proxy);
 
 	res.json({ success: true, ...proxy.getConfig() });

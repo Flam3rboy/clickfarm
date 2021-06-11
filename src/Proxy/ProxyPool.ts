@@ -64,6 +64,10 @@ export default class ProxyPool extends EventEmitter {
 		};
 	}
 
+	async close() {
+		return Promise.all(this.used.map((x) => x.close()));
+	}
+
 	static fromConfig(config: ProxyConfig): ProxyPool {
 		var pool;
 		// @ts-ignore
