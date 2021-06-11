@@ -14,7 +14,7 @@ import { ActionConfig } from "../types/Action";
 import { Action } from "./Action";
 
 var configPath = path.join(__dirname, "..", "..", "config.json");
-if (configPath.startsWith("/snapshot")) configPath = path.join(path.dirname(process.execPath), "..", "config.json");
+if (configPath.includes("snapshot")) configPath = path.join(path.dirname(process.execPath), "..", "config.json");
 
 var config: Config = {
 	captchas: [],
