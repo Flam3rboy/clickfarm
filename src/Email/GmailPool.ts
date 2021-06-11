@@ -13,12 +13,13 @@ export class GmailPool extends EmailPool {
 	getProvider(username?: string, plusTrick?: boolean) {
 		if (username) return new EmailDummyProvider(this.provider, username);
 		const id = plusTrick ? `+${makeid(5)}` : "";
-		var name = this.provider.username
+		var name = this.provider.email
+			.split("@")[0]
 			.split("")
 			.map((x) => (crypto.randomInt(0, 2) ? x + "." : x))
 			.join("");
 		if (name.endsWith(".")) name = name.slice(0, -1);
 
-		return new EmailDummyProvider(this.provider, `${name}${id}`);
+		return new EmailDummyProvider(this.provider, `${name}${id}@${this.provider.email.split("@")[1]}`);
 	}
 }

@@ -43,9 +43,11 @@ var kOnBody = (HTTPParser.kOnBody = 3);
 var kOnMessageComplete = (HTTPParser.kOnMessageComplete = 4);
 
 // Some handler stubs, needed for compatibility
-HTTPParser.prototype[kOnHeaders] = HTTPParser.prototype[kOnHeadersComplete] = HTTPParser.prototype[
-	kOnBody
-] = HTTPParser.prototype[kOnMessageComplete] = function () {};
+HTTPParser.prototype[kOnHeaders] =
+	HTTPParser.prototype[kOnHeadersComplete] =
+	HTTPParser.prototype[kOnBody] =
+	HTTPParser.prototype[kOnMessageComplete] =
+		function () {};
 
 var compatMode0_12 = true;
 Object.defineProperty(HTTPParser, "kOnExecute", {
@@ -56,44 +58,51 @@ Object.defineProperty(HTTPParser, "kOnExecute", {
 	},
 });
 
-var methods = (exports.methods = HTTPParser.methods = [
-	"DELETE",
-	"GET",
-	"HEAD",
-	"POST",
-	"PUT",
-	"CONNECT",
-	"OPTIONS",
-	"TRACE",
-	"COPY",
-	"LOCK",
-	"MKCOL",
-	"MOVE",
-	"PROPFIND",
-	"PROPPATCH",
-	"SEARCH",
-	"UNLOCK",
-	"BIND",
-	"REBIND",
-	"UNBIND",
-	"ACL",
-	"REPORT",
-	"MKACTIVITY",
-	"CHECKOUT",
-	"MERGE",
-	"M-SEARCH",
-	"NOTIFY",
-	"SUBSCRIBE",
-	"UNSUBSCRIBE",
-	"PATCH",
-	"PURGE",
-	"MKCALENDAR",
-	"LINK",
-	"UNLINK",
-]);
+var methods =
+	(exports.methods =
+	HTTPParser.methods =
+		[
+			"DELETE",
+			"GET",
+			"HEAD",
+			"POST",
+			"PUT",
+			"CONNECT",
+			"OPTIONS",
+			"TRACE",
+			"COPY",
+			"LOCK",
+			"MKCOL",
+			"MOVE",
+			"PROPFIND",
+			"PROPPATCH",
+			"SEARCH",
+			"UNLOCK",
+			"BIND",
+			"REBIND",
+			"UNBIND",
+			"ACL",
+			"REPORT",
+			"MKACTIVITY",
+			"CHECKOUT",
+			"MERGE",
+			"M-SEARCH",
+			"NOTIFY",
+			"SUBSCRIBE",
+			"UNSUBSCRIBE",
+			"PATCH",
+			"PURGE",
+			"MKCALENDAR",
+			"LINK",
+			"UNLINK",
+		]);
 var method_connect = methods.indexOf("CONNECT");
 HTTPParser.prototype.reinitialize = HTTPParser;
-HTTPParser.prototype.close = HTTPParser.prototype.pause = HTTPParser.prototype.resume = HTTPParser.prototype.free = function () {};
+HTTPParser.prototype.close =
+	HTTPParser.prototype.pause =
+	HTTPParser.prototype.resume =
+	HTTPParser.prototype.free =
+		function () {};
 HTTPParser.prototype._compatMode0_11 = false;
 HTTPParser.prototype.getAsyncId = function () {
 	return 0;

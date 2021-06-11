@@ -109,7 +109,7 @@ export async function tempDir() {
 var idCounter = 0;
 
 export function makeid(length?: number): string {
-	if (!length) return String(idCounter++);
+	if (!length) length = 10; // return String(idCounter++);
 	var result = "";
 	var characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 	var charactersLength = characters.length;

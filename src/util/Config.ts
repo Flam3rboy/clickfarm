@@ -1,19 +1,20 @@
-import writeFileAtomic from "write-file-atomic";
 import path from "path";
 import fs from "fs";
 import { Account } from "../Account";
 import { db } from "./db";
 import { EmailPool, ImapProvider } from "../Email";
 import { CaptchaProvider } from "../Captcha/CaptchaProvider";
-import { Action, ActionConfig } from "./Action";
 import ProxyPool from "../Proxy/ProxyPool";
 import { EmailConfig } from "../types/Email";
 import { ProxyConfig } from "../types/Proxy";
 import { CaptchaConfig } from "../types/Captcha";
 import { AccountConfig } from "../types/Account";
 import { Worker } from "./Worker";
+import { ActionConfig } from "../types/Action";
+import { Action } from "./Action";
 
-const configPath = path.join(__dirname, "..", "..", "config.json");
+var configPath = path.join(__dirname, "..", "..", "config.json");
+if (configPath.startsWith("/snapshot")) configPath = path.join(path.dirname(process.execPath), "..", "config.json");
 
 var config: Config = {
 	captchas: [],
@@ -26,13 +27,20 @@ var config: Config = {
 		args: [],
 	},
 	workers_count: 1,
+	captchas_solved: 0,
 };
 
 export async function init() {
-	config = JSON.parse(fs.readFileSync(configPath, { encoding: "utf8" }));
+	try {
+		config = JSON.parse(fs.readFileSync(configPath, { encoding: "utf8" }));
+	} catch (error) {
+		return;
+	}
 	db.proxies = config.proxies.map((x) => ProxyPool.fromConfig(x));
 	db.emails = config.emails.map((x) => EmailPool.fromConfig(x));
-	db.accounts = config.accounts.map((x) => Account.fromConfig(x));
+	db.accounts = config.accounts
+		// .filter((x) => x.status !== "notregistered")
+		.map((x) => Account.fromConfig(x));
 	db.captchas = config.captchas.map((x) => CaptchaProvider.fromConfig(x));
 	db.actions = config.actions.map((x) => Action.fromConfig(x));
 
@@ -40,7 +48,11 @@ export async function init() {
 		db.workers.push(new Worker());
 	}
 
-	await Promise.all([...db.emails.map((x) => x.init()), ...db.proxies.map((x) => x.init())]);
+	await Promise.all([
+		...db.emails.map((x) => x.init()),
+		...db.proxies.map((x) => x.init()),
+		...db.workers.map((x) => x.start()),
+	]);
 }
 
 try {
@@ -56,10 +68,16 @@ export function saveConfig() {
 	config.actions = db.actions.map((x) => x.getConfig());
 	config.captchas = db.captchas.map((x) => x.getConfig());
 
-	return writeFileAtomic(configPath, JSON.stringify(config, null, "\t"));
+	fs.writeFileSync(configPath + ".temp", JSON.stringify(config, undefined, "\t"));
+	try {
+		JSON.parse(fs.readFileSync(configPath + ".temp", { encoding: "utf8" }));
+	} catch (error) {
+		return console.error("error saving database");
+	}
+	fs.renameSync(configPath + ".temp", configPath);
 }
 
-setInterval(saveConfig, 1000 * 30);
+setInterval(saveConfig, 1000 * 10);
 
 export interface Config {
 	captchas: CaptchaConfig[];
@@ -76,4 +94,5 @@ export interface Config {
 		slowMo?: number;
 	};
 	workers_count: number;
+	captchas_solved: number;
 }

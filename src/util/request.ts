@@ -29,7 +29,11 @@ export async function request(url: string, opts?: RequestOptions): Promise<any> 
 		}
 		if (!opts.method) opts.method = "POST";
 	}
-	const res = await fetch(url, <RequestInit>opts);
+	try {
+		var res = await fetch(url, <RequestInit>opts);
+	} catch (error) {
+		throw "Request failed";
+	}
 	if (res.status === 204) return true;
 	const text = await res.text();
 	const error = res.status >= 400 || res.status < 200;

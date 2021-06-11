@@ -6,11 +6,9 @@ import { EmailProvider } from "./EmailProvider";
 
 export class EmailPool extends EventEmitter {
 	type: EmailService;
-	uuid: string;
 
 	constructor(public provider: EmailProvider) {
 		super();
-		if (!this.uuid) this.uuid = makeid();
 	}
 
 	async init() {

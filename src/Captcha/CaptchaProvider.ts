@@ -9,7 +9,10 @@ export abstract class CaptchaProvider {
 
 	constructor() {
 		if (!this.uuid) this.uuid = makeid();
-		this.getBalance();
+	}
+
+	async init() {
+		await this.getBalance();
 	}
 
 	async getBalance() {
@@ -29,7 +32,7 @@ export abstract class CaptchaProvider {
 		};
 	}
 
-	static fromConfig(config: CaptchaConfig) {
+	static fromConfig(config: CaptchaConfig): CaptchaProvider {
 		const Providers = {
 			"2captcha": require("./2Captcha").TwoCaptcha,
 			"anti-captcha": require("./AntiCaptcha").AntiCaptcha,
@@ -37,8 +40,10 @@ export abstract class CaptchaProvider {
 		};
 
 		try {
-			Providers["anti-captcha-trial"] = require("./AntiCaptchaTrial");
-		} catch (error) {}
+			Providers["anti-captcha-trial"] = require("./AntiCaptchaTrial").AntiCaptchaTrial;
+		} catch (error) {
+			console.error(error);
+		}
 
 		return Object.assign(new Providers[config.service](config.key), config);
 	}

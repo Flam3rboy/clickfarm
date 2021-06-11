@@ -14,7 +14,6 @@ export interface AccountSettings {
 	avatar?: string;
 	dateofbirth?: Date;
 	email?: string;
-	email_username?: string;
 	email_uuid?: string;
 }
 

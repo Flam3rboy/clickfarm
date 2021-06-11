@@ -1,5 +1,6 @@
 import { EventEmitter } from "events";
 import { EmailConfig, EmailService } from "../types/Email";
+import { makeid } from "../util/Util";
 import { Email } from "./Email";
 
 export abstract class EmailProvider extends EventEmitter {
@@ -9,18 +10,14 @@ export abstract class EmailProvider extends EventEmitter {
 	host: string;
 	port: number;
 	secure: boolean;
-	login?: string;
 
-	constructor(public readonly username: string, public readonly domain: string) {
+	constructor(public readonly email: string) {
 		super();
+		this.uuid = makeid();
 	}
 
 	init(): any | Promise<any> {}
 	close(): any | Promise<any> {}
-
-	get email() {
-		return `${this.username}@${this.domain}`;
-	}
 
 	async waitFor(filter: (email: Email) => boolean, opts?: { timeout: number }): Promise<Email> {
 		return new Promise((res, rej) => {
@@ -45,11 +42,9 @@ export abstract class EmailProvider extends EventEmitter {
 		return {
 			password: this.password,
 			type: this.type,
-			username: this.username,
 			uuid: this.uuid,
-			domain: this.domain,
 			host: this.host,
-			login: this.login,
+			email: this.email,
 			port: this.port,
 			secure: this.secure,
 		};
@@ -57,17 +52,16 @@ export abstract class EmailProvider extends EventEmitter {
 
 	static fromConfig(config: EmailConfig) {
 		if (config.type === "gmail") {
-			const provider = require("./GmailProvider").GmailProvider;
+			const Provider = require("./GmailProvider").GmailProvider;
 
-			return new provider(config.username, config.password);
+			const provider = new Provider(config.email, config.password);
+			if (config.uuid) provider.uuid = config.uuid;
+			return provider;
 		}
 
 		// @ts-ignore
-		return new require("./ImapProvider").ImapProvider(config.username, config.domain as string, config.password, {
-			host: config.host as string,
-			port: config.port as number,
-			secure: config.secure as boolean,
-			login: config.login as string,
-		});
+		const provider = new require("./ImapProvider").ImapProvider(config);
+
+		return provider;
 	}
 }

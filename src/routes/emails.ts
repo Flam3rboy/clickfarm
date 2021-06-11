@@ -10,15 +10,18 @@ router.get("/", (req, res) => {
 	res.json(db.emails.map((x) => x.getConfig()));
 });
 
-router.get("/:id", (req, res) => {
-	res.json(db.emails.find((x) => x.uuid === req.params.id)?.getConfig());
+router.delete("/:id", (req, res) => {
+	const mail = db.emails.find((x) => x.provider.uuid === req.params.id);
+	if (!mail) throw new HTTPError("Mail not found");
+	db.emails.remove(mail);
+	res.json({ success: true, ...mail.getConfig() });
 });
 
 router.post(
 	"/",
 	check({
 		type: String,
-		username: String,
+		email: String,
 		password: String,
 		$domain: String,
 		$host: String,
@@ -29,14 +32,14 @@ router.post(
 	async (req, res) => {
 		const body = req.body as EmailConfig;
 
-		const exists = db.emails.find((x) => x.provider.username === req.body.username && x.type === body.type);
+		const exists = db.emails.find((x) => x.provider.email === req.body.email);
 		if (exists) throw new HTTPError("Email already exists");
 
-		const provider = EmailPool.fromConfig(body);
-		await provider.init();
-		db.emails.push(provider);
+		const pool = EmailPool.fromConfig(body);
+		await pool.init();
+		db.emails.push(pool);
 
-		res.json(provider.getConfig());
+		res.json(pool.getConfig());
 	}
 );
 

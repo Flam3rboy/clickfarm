@@ -2,8 +2,8 @@ import { Email } from "./Email";
 import { EmailProvider } from "./EmailProvider";
 
 export class EmailDummyProvider extends EmailProvider {
-	constructor(public client: EmailProvider, username: string) {
-		super(username, client.domain);
+	constructor(public client: EmailProvider, email: string) {
+		super(email);
 		this.init();
 	}
 

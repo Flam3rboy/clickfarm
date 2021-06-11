@@ -1,4 +1,3 @@
-import { config } from "./Config";
 import { pathExists } from "./Util";
 import puppeteer, { Browser } from "puppeteer-core";
 
@@ -6,6 +5,8 @@ var browser: Promise<Browser>;
 
 export async function getBrowser() {
 	if (browser) return browser;
+
+	const config = require("./Config").config;
 
 	var chromePath = <string>config.browser.chrome;
 	if (typeof chromePath !== "string") {

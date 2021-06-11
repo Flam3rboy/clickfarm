@@ -90,7 +90,7 @@ export class DiscordAccount extends Account {
 
 	async init() {
 		if (this.intialized) return this.intialized;
-		this.intialized = Promise.all([this.initFingerprint(), this.initAvatar(), this.emailProvider?.init()]);
+		this.intialized = Promise.all([this.initFingerprint(), this.emailProvider?.init()]);
 		return this.intialized;
 	}
 
@@ -296,9 +296,8 @@ export class DiscordAccount extends Account {
 			);
 
 			await page.click(`[class*=checkbox] [class*=inputDefault]`);
-			await sleep(15000);
-			console.log("sleep 15sec");
 			await page.click(`[type="submit"]`);
+			await sleep(1000 * 60 * 5); // wait for captcha
 			await page.waitForNavigation();
 		} catch (e) {
 			console.error(e);
@@ -445,6 +444,7 @@ export class DiscordAccount extends Account {
 	async login() {}
 
 	async uploadAvatar() {
+		if (!this.avatarBase64) await this.initAvatar();
 		return this.fetch("/users/@me", {
 			body: {
 				avatar: this.avatarBase64,

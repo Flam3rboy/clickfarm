@@ -2,14 +2,22 @@ import { ProxyManager } from "./ProxyManager";
 import { ChildProcess, spawn } from "child_process";
 import { sleep, tempDir } from "../util/Util";
 import { ProxyType } from "../types/Proxy";
+import { db } from "../util";
 
 export class Tor extends ProxyManager {
 	private process?: ChildProcess;
 	private intalized: boolean;
 	public static type: ProxyType = "tor";
+	static counter = 0;
+	public port: number;
+	private id: number;
 
-	constructor(public port: number) {
+	constructor() {
+		const port = Tor.counter + 9000;
 		super("socks5://localhost:" + port);
+		this.id = Tor.counter;
+		this.port = port;
+		Tor.counter++;
 	}
 
 	public static get available() {
@@ -25,10 +33,14 @@ export class Tor extends ProxyManager {
 		await new Promise((resolve, reject) => {
 			let history = "";
 			this.process?.stdout?.on("data", (log) => {
-				log = log.toString().slice(0, -1);
-				history += log;
-				if (log.includes("100% (done)")) resolve(true);
-				if (log.includes("[err]")) reject(history);
+				log = log.toString();
+				console.log(log);
+				if (log.includes("[warn]")) history += log;
+				if (log.includes("100% (done)")) {
+					db.events.emit("event", { message: `TOR ${this.port} started` });
+					resolve(true);
+				}
+				if (log.includes("[err]")) reject(history + log);
 			});
 		});
 	}

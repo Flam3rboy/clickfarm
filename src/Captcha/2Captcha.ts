@@ -10,8 +10,13 @@ export class TwoCaptcha extends CaptchaProvider {
 
 	async getBalance() {
 		const req = await fetch(`http://2captcha.com/res.php?json=1&key=${this.apiKey}&action=getbalance`);
-		const json = await req.json();
-		if (!json.status) throw json;
+		var json: any = await req.text();
+		try {
+			json = JSON.parse(json);
+			if (!json.status) throw json.error_text || json.request;
+		} catch (error) {
+			throw error;
+		}
 
 		this.balance = Number(json.request);
 		return this.balance;

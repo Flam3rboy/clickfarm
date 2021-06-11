@@ -1,7 +1,15 @@
+import express from "express";
 import { Server } from "lambert-server";
 import path from "path";
 import process from "process";
 import { db } from "./util";
+import open from "open";
+import accounts from "./routes/accounts";
+import actions from "./routes/actions";
+import captchas from "./routes/captchas";
+import emails from "./routes/emails";
+import proxies from "./routes/proxies";
+import workers from "./routes/workers";
 
 export function sendError(error: any) {
 	try {
@@ -21,8 +29,15 @@ async function start() {
 		res.set("Access-Control-Allow-Methods", "*");
 		next();
 	});
-	await server.registerRoutes(path.join(__dirname, "routes/"));
+	server.app.use(express.static(path.join(__dirname, "..", "gui", "build")));
+	server.app.use(accounts);
+	server.app.use(actions);
+	server.app.use(captchas);
+	server.app.use(emails);
+	server.app.use(proxies);
+	server.app.use(workers);
 	await server.start();
+	await open(`http://localhost:4932`);
 }
 
 start();

@@ -76,7 +76,6 @@ export abstract class Account {
 			avatar: this.avatar,
 			dateofbirth: this.dateofbirth,
 			email: this.emailProvider?.email,
-			email_username: this.emailProvider?.username,
 			email_uuid: this.emailProvider?.uuid,
 		};
 	}

@@ -1,6 +1,7 @@
 import { DiscordAccount } from "../Account/DiscordAccount";
+import { ActionConfig, ActionStatus, DiscordAction } from "../types/Action";
+import { DB } from "../types/Database";
 import { getBrowser } from "./Browser";
-import { db } from "./db";
 import { makeid } from "./Util";
 
 export class Action {
@@ -20,11 +21,19 @@ export class Action {
 	}
 
 	async do() {
+		const db: DB = require("../util/db").db;
 		try {
 			this.status = "inwork";
 
-			const acc: any = require("../util/db").db.accounts.find((x: any) => x.uuid === this.account_id);
+			const acc: any = db.accounts.find((x: any) => x.uuid === this.account_id);
 			if (!acc) return;
+
+			acc.emailProvider = db.emails.random()?.getProvider();
+			acc.proxy = await db.proxies
+				.filter((x) => x)
+				.random()
+				?.getProxy();
+			acc.captchaProvider = db.captchas.random();
 
 			this.type = `${acc.type} ${Object.entries(this.payload)
 				.filter(([key, value]) => value)
@@ -37,7 +46,7 @@ export class Action {
 					const { register, uploadAvatar, connect, updateUser, uploadDateOfBirth, verifyEmail } = this
 						.payload as DiscordAction;
 
-					if (register) {
+					if (register && account.status === "notregistered") {
 						var options: any = { ...register };
 						if (register.browser) options.browser = await getBrowser();
 						await account.register(options);
@@ -53,6 +62,8 @@ export class Action {
 				default:
 					throw new Error("Platform not supported: " + acc.type);
 			}
+
+			await acc.proxy?.release();
 
 			this.status = "done";
 			db.events.emit("event", {
@@ -87,27 +98,4 @@ export class Action {
 	static fromConfig(config: ActionConfig): Action {
 		return new Action(config);
 	}
-}
-
-export interface ActionConfig {
-	account_id: string;
-	type: string;
-	uuid: string;
-	status: ActionStatus;
-	error?: any;
-	payload: any;
-}
-
-export type ActionStatus = "pending" | "inwork" | "done" | "error";
-
-export interface DiscordAction {
-	register?: {
-		browser?: boolean;
-		invite?: string;
-	};
-	verifyEmail?: boolean;
-	uploadDateOfBirth?: boolean;
-	uploadAvatar?: boolean;
-	connect?: boolean;
-	updateUser?: boolean;
 }

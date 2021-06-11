@@ -9,19 +9,14 @@ import { simpleParser } from "mailparser";
 export class ImapProvider extends EmailProvider {
 	public client: any;
 
-	constructor(
-		public username: string,
-		public domain: string,
-		public password: string,
-		opts: { host: string; port: number; secure: boolean; login?: string }
-	) {
-		super(username, domain);
+	constructor(opts: { password: string; host: string; port: number; secure: boolean; email: string }) {
+		super(opts.email);
 		this.host = opts.host;
 		this.port = opts.port;
-		this.login = opts.login;
 		this.secure = opts.secure;
+		this.password = opts.password;
 		this.client = new ImapClient(opts.host, opts.port, {
-			auth: { user: opts.login || username, pass: password },
+			auth: { user: opts.email, pass: opts.password },
 			useSecureTransport: opts.secure,
 			logLevel: "info",
 		});

@@ -1,3 +1,5 @@
+// @ts-ignore
+process.binding("http_parser").HTTPParser = require("./http-parser").HTTPParser;
 import { CaptchaProvider } from "./CaptchaProvider";
 const ac = require("@antiadmin/anticaptchaofficial");
 import { request } from "https";
@@ -47,9 +49,9 @@ export class AntiCaptcha extends CaptchaProvider {
 				clientKey: this.key,
 			},
 		});
-		if (result.errorId) throw result;
-		this.balance = result.balance;
-		return result.balance;
+		if (result.errorId) throw result.errorDescription || result.errorCode;
+		this.balance = Number(result.balance);
+		return this.balance;
 	}
 
 	async solve(opts: { timeout?: number; agent?: any; task?: any; websiteURL: string; websiteKey: string }) {
