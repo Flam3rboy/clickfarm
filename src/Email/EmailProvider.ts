@@ -60,8 +60,8 @@ export abstract class EmailProvider extends EventEmitter {
 		}
 
 		// @ts-ignore
-		const provider = new require("./ImapProvider").ImapProvider(config);
+		const provider = require("./ImapProvider").ImapProvider;
 
-		return provider;
+		return new provider(config);
 	}
 }

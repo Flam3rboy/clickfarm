@@ -18,7 +18,7 @@ export class GmailProvider extends ImapProvider {
 		} catch (error) {
 			if ((error?.message || error).includes(" in via your web browser")) {
 				throw new Error(
-					`You need to enable "allow access to less secure apps": https://myaccount.google.com/lesssecureapps`
+					`You need to enable "allow access to less secure apps": https://myaccount.google.com/lesssecureapps and use an account without two-factor-authentication`
 				);
 			}
 
