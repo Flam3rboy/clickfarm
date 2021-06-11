@@ -10,7 +10,9 @@ import { StoreContext } from "../util/Store";
 import Accounts from "../pages/Account/Accounts";
 import { request } from "../util/request";
 import Notifications from "./Notifications";
-import Email from "../pages/Email/Email";
+import Emails from "../pages/Email/Emails";
+import Proxies from "../pages/Proxy/Proxies";
+import Captchas from "../pages/Captcha/Captchas";
 
 export default function Dashboard() {
 	const [context, setContext] = useContext(StoreContext);
@@ -37,6 +39,10 @@ export default function Dashboard() {
 		request(`/accounts`).then((accounts) => setContext({ accounts }));
 		request(`/workers`).then((workers) => setContext({ workers }));
 		request(`/emails`).then((emails) => setContext({ emails }));
+		request(`/captchas`).then(({ total, providers }) =>
+			setContext({ captchas: providers, captchas_solved: total })
+		);
+		request(`/proxies`).then((proxies) => setContext({ proxies }));
 	}, []);
 
 	return (
@@ -52,7 +58,9 @@ export default function Dashboard() {
 						<Switch>
 							<Route exact path="/" component={Overview}></Route>
 							<Route exact path="/accounts" component={Accounts}></Route>
-							<Route exact path="/emails" component={Email}></Route>
+							<Route exact path="/emails" component={Emails}></Route>
+							<Route exact path="/captchas" component={Captchas}></Route>
+							<Route exact path="/proxies" component={Proxies}></Route>
 						</Switch>
 					</main>
 				</div>

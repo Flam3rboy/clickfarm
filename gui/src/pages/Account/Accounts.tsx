@@ -4,8 +4,8 @@ import { useContext, useState } from "react";
 import { StoreContext } from "../../util/Store";
 import MaterialTable from "@material-table/core";
 import Button from "@material-ui/core/Button";
-import Action from "./Action";
-import Generate from "./Generate";
+import Action from "./AccountAction";
+import Generate from "./AccountGenerate";
 
 export default function Accounts() {
 	const [context] = useContext(StoreContext);

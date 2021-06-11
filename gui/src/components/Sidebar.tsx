@@ -4,8 +4,8 @@ import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import SupervisorAccountIcon from "@material-ui/icons/SupervisorAccount";
 import MailIcon from "@material-ui/icons/Mail";
+import DnsIcon from "@material-ui/icons/Dns";
 import HomeIcon from "@material-ui/icons/Home";
-import AssignmentIcon from "@material-ui/icons/Assignment";
 import {
 	List,
 	ListItem,
@@ -91,6 +91,7 @@ export default function Sidebar() {
 						</SvgIcon>
 					}
 				/>
+				<ListItemLink tooltip={!open} to="/proxies" primary="Proxy" icon={<DnsIcon />} />
 			</List>
 		</Drawer>
 	);

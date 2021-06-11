@@ -129,6 +129,9 @@ html {
 	left: auto !important;
 }
 
-.dialog-add-email .MuiDialog-paper {
+/*
+.dialog-add-email 
+*/
+.MuiDialog-paper {
 	min-width: 300px;
 }

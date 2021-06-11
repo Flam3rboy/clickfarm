@@ -9,8 +9,12 @@ export async function request(path: string, options?: any) {
 	if (options.body && !options.method) options.method = "POST";
 
 	const response = await fetch(`http://localhost:4932${path}`, options);
-	const json = await response.json();
-	console.log(json);
+	var json: any = await response.text();
+	try {
+		json = JSON.parse(json);
+	} catch (e) {
+		throw json;
+	}
 	if (response.status !== 200) throw json.message;
 
 	return json;

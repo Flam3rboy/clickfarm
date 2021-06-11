@@ -23,9 +23,8 @@ export default function AddEmail({ open, setOpen }: { open: boolean; setOpen: (v
 	const [context, setContext] = useContext(StoreContext);
 	const [secure, setSecure] = useState(true);
 	const [provider, setProvider] = useState("gmail");
-	const [username, setUsername] = useState("");
+	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
-	const [domain, setDomain] = useState("");
 	const [host, setHost] = useState("");
 	const [port, setPort] = useState("");
 	const [loading, setLoading] = useState(false);
@@ -37,18 +36,17 @@ export default function AddEmail({ open, setOpen }: { open: boolean; setOpen: (v
 		setLoading(true);
 		setError(null);
 		try {
-			const email = await request(`/emails`, {
+			const result = await request(`/emails`, {
 				body: {
 					type: provider,
 					secure,
-					username,
+					email,
 					password,
-					domain,
 					host,
 					port,
 				},
 			});
-			setContext({ emails: [...(context.emails || []), email] });
+			setContext({ emails: [...(context.emails || []), result] });
 			setOpen(false);
 		} catch (e) {
 			setError(e);
@@ -56,8 +54,6 @@ export default function AddEmail({ open, setOpen }: { open: boolean; setOpen: (v
 			setLoading(false);
 		}
 	}
-
-	console.log(error);
 
 	return (
 		<Dialog className="dialog-add-email" maxWidth="xl" open={open} onClose={() => setOpen(false)}>
@@ -78,7 +74,7 @@ export default function AddEmail({ open, setOpen }: { open: boolean; setOpen: (v
 					</Select>
 				</FormControl>
 
-				<TextField value={username} onChange={(e) => setUsername(e.target.value)} label="Username"></TextField>
+				<TextField value={email} onChange={(e) => setEmail(e.target.value)} label="Email"></TextField>
 				<TextField
 					value={password}
 					onChange={(e) => setPassword(e.target.value)}
@@ -87,11 +83,6 @@ export default function AddEmail({ open, setOpen }: { open: boolean; setOpen: (v
 				></TextField>
 				{provider === "imap" && (
 					<>
-						<TextField
-							value={domain}
-							onChange={(e) => setDomain(e.target.value)}
-							label="Domain"
-						></TextField>
 						<TextField value={host} onChange={(e) => setHost(e.target.value)} label="Host"></TextField>
 						<TextField value={port} onChange={(e) => setPort(e.target.value)} label="Port"></TextField>
 						<FormControlLabel
