@@ -8,13 +8,19 @@
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"build": "tsc -b .",
-		"pkg": "npm run build && pkg .",
-		"start": "npm run build && node dist/Server.js",
+		"pkg": "npm run build && cd gui && npm run build && cd .. && pkg .",
+		"start": "npm run build && node --insecure-http-parser --no-warnings --expose-internals dist/Server.js",
 		"circular-dependency": "npx madge --circular --extensions ts ./src/",
 		"discord": "npm run build && node --http-parser=legacy dist/sample/discord_account_generator.js"
 	},
 	"pkg": {
 		"scripts": "dist/**/*.js",
+		"options": [
+			"http-parser=legacy",
+			"insecure-http-parser",
+			"expose-internals",
+			"no-warnings"
+		],
 		"assets": [
 			"gui/build/**/*",
 			"assets/Lists/*",
@@ -71,7 +77,7 @@
 		"puppeteer-core": "^10.0.0",
 		"puppeteer-page-proxy": "^1.2.8",
 		"ua-parser-js": "^0.7.22",
-		"uuid": "^8.3.1",
+		"uuid": "^8.3.2",
 		"ws": "^7.4.5"
 	}
 }

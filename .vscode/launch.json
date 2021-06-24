@@ -12,7 +12,7 @@
 			"program": "${workspaceFolder}/dist/server.js",
 			"preLaunchTask": "tsc: build - tsconfig.json",
 			"outFiles": ["${workspaceFolder}/dist/**/*.js"],
-			"runtimeArgs": ["--http-parser=legacy"]
+			"runtimeArgs": ["--insecure-http-parser", "--no-warnings", "--expose-internals"]
 		}
 	]
 }

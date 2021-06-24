@@ -203,7 +203,7 @@ async function login() {
 		// );
 		// rsaKey = key;
 
-		// newIp();
+		await newIp();
 	} catch (error) {
 		console.error(error);
 	}

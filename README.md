@@ -10,10 +10,12 @@ A modular account automation tool for multiple platforms with a web dashboard:
 
 ## Installation
 
-1. Download clickfarm: 
-- [Windows](https://github.com/Flam3rboy/clickfarm/raw/master/executable/clickfarm-win.exe) (You might get a popup "Windows protected your pc", proceed by clicking on "Run anyway", this is caused because this program is not from a certified developer)
-- [Linux](https://github.com/Flam3rboy/clickfarm/raw/master/executable/clickfarm-linux) (Execute it in the terminal)
-- [MacOS](https://github.com/Flam3rboy/clickfarm/raw/master/executable/clickfarm-macos) (Open Terminal by searching in spotlight, enter ``chmod +x `` and drag an drop the file into the terminal)
+1. Download clickfarm:
+
+-   [Windows](https://github.com/Flam3rboy/clickfarm/raw/master/executable/clickfarm-win.exe) (You might get a popup "Windows protected your pc", proceed by clicking on "Run anyway", this is caused because this program is not from a certified developer)
+-   [Linux](https://github.com/Flam3rboy/clickfarm/raw/master/executable/clickfarm-linux) (Execute it in the terminal)
+-   [MacOS](https://github.com/Flam3rboy/clickfarm/raw/master/executable/clickfarm-macos) (Open Terminal by searching in spotlight, enter `chmod +x ` and drag an drop the file into the terminal)
+
 2. Execute it by double clicking on the file
 3. Open your local dashboard at http://localhost:4932
 
@@ -64,6 +66,7 @@ For educational purposes only
 -   AntiCaptcha
 -   2Captcha
 -   [ ] Manually
+-   [ ] Precaching to accelerate speed
 
 ### Email
 
@@ -89,15 +92,19 @@ For educational purposes only
 
 -   [ ] SMS verification
 
-
 ## Development
+
 If you want to build or develop additional features follow this guide:
+
 ### Requirements
-- [nodejs](https://nodejs.org/) ``node`` with ``npm`` installed and added to the path
-- [git](https://git-scm.com/) installed
+
+-   [nodejs](https://nodejs.org/) `node` with `npm` installed and added to the path
+-   [git](https://git-scm.com/) installed
 
 ### Setup
+
 Server
+
 ```
 git clone https://github.com/Flam3rboy/clickfarm
 cd clickfarm
@@ -106,6 +113,7 @@ npm start
 ```
 
 Client:
+
 ```
 cd clickfarm
 cd gui

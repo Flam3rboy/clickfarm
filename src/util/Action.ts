@@ -11,6 +11,7 @@ export class Action {
 	status: ActionStatus;
 	error?: any;
 	payload?: any;
+	repeat?: number;
 
 	constructor(config: ActionConfig) {
 		if (this.status == "inwork") this.status = "pending"; // program restarted and didn't quit action
@@ -20,25 +21,31 @@ export class Action {
 		Object.assign(this, config);
 	}
 
-	async do() {
+	async do(): Promise<void> {
 		const db: DB = require("../util/db").db;
 		try {
 			this.status = "inwork";
 
-			const acc: any = db.accounts.find((x: any) => x.uuid === this.account_id);
+			var acc: any = db.accounts.find((x: any) => x.uuid === this.account_id);
 			if (!acc) return;
 
-			acc.emailProvider = db.emails.random()?.getProvider();
-			acc.proxy = await db.proxies
-				.filter((x) => x)
-				.random()
-				?.getProxy();
-			acc.captchaProvider = db.captchas.random();
+			if (!acc.emailProvider) {
+				acc.emailProvider = db.emails.random()?.getProvider();
+			}
+			if (!acc.proxy) {
+				acc.proxy = await db.proxies
+					.filter((x) => x)
+					.random()
+					?.getProxy();
+			}
+			if (!acc.captchaProvider) acc.captchaProvider = db.captchas.random();
 
 			this.type = `${acc.type} ${Object.entries(this.payload)
 				.filter(([key, value]) => value)
 				.map(([key]) => key)
 				.join(", ")}`;
+
+			console.log("do action " + this.type);
 
 			switch (acc.type) {
 				case "discord":
@@ -49,7 +56,13 @@ export class Action {
 					if (register && account.status === "notregistered") {
 						var options: any = { ...register };
 						if (register.browser) options.browser = await getBrowser();
-						await account.register(options);
+						await account.register(options).catch((e) => {
+							if (e?.code === 40002) {
+								account.status = "blocked";
+							}
+							throw e;
+						});
+						account.status = "available";
 					}
 
 					if (uploadDateOfBirth) await account.uploadDateOfBirth();
@@ -63,24 +76,33 @@ export class Action {
 					throw new Error("Platform not supported: " + acc.type);
 			}
 
-			await acc.proxy?.release();
+			if (!this.repeat) {
+				this.status = "done";
+				await acc.proxy?.release();
+			}
 
-			this.status = "done";
 			db.events.emit("event", {
 				type: "ACTION_DONE",
 				id: this.uuid,
 				message: `Action ${this.type} done`,
-				total: db.actions.length,
-				done: db.actions.filter((x) => x.status === "done").length,
 			});
+
+			if (this.repeat && this.repeat > 0) {
+				this.repeat--;
+				await this.do();
+			}
 		} catch (error) {
+			if (acc) {
+				acc.proxy?.release();
+			}
 			this.status = "error";
 			this.error = error;
 			db.events.emit("event", {
 				type: "ACTION_ERROR",
 				id: this.uuid,
-				message: `Action Error ${this.type}: ${error}`,
+				message: `Action Error ${this.type}: ${error?.message || error}`,
 			});
+			console.error(error);
 		}
 	}
 

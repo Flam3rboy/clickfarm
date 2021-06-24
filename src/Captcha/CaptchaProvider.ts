@@ -37,14 +37,16 @@ export abstract class CaptchaProvider {
 			"2captcha": require("./2Captcha").TwoCaptcha,
 			"anti-captcha": require("./AntiCaptcha").AntiCaptcha,
 			"anti-captcha-trial": require("./AntiCaptcha").AntiCaptcha,
+			"anti-captcha-proxy": require("./AntiCaptchaProxy").AntiCaptchaProxy,
+			manual: require("./ManualCaptcha").ManualCaptcha,
 		};
 
 		try {
 			Providers["anti-captcha-trial"] = require("./AntiCaptchaTrial").AntiCaptchaTrial;
-		} catch (error) {
-			console.error(error);
-		}
+		} catch (error) {}
 
 		return Object.assign(new Providers[config.service](config.key), config);
 	}
+
+	async close() {}
 }

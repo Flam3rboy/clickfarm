@@ -51,6 +51,7 @@ export async function request(url: string, opts?: RequestOptions): Promise<any> 
 	}
 
 	if (json) {
+		console.log(url);
 		if (json.error || (json.code && !json.guild) || json.message) throw json;
 		if (error) throw json;
 	}

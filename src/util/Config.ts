@@ -38,11 +38,9 @@ export async function init() {
 	}
 	db.proxies = config.proxies.map((x) => ProxyPool.fromConfig(x));
 	db.emails = config.emails.map((x) => EmailPool.fromConfig(x));
-	db.accounts = config.accounts
-		// .filter((x) => x.status !== "notregistered")
-		.map((x) => Account.fromConfig(x));
+	db.accounts = config.accounts.map((x) => Account.fromConfig(x));
 	db.captchas = config.captchas.map((x) => CaptchaProvider.fromConfig(x));
-	db.actions = config.actions.map((x) => Action.fromConfig(x));
+	db.actions = config.actions.filter((x) => x.status != "done").map((x) => Action.fromConfig(x));
 
 	for (var i = 0; i < config.workers_count; i++) {
 		db.workers.push(new Worker());
@@ -51,6 +49,7 @@ export async function init() {
 	await Promise.all([
 		...db.emails.map((x) => x.init()),
 		...db.proxies.map((x) => x.init()),
+		...db.captchas.map((x) => x.init()),
 		...db.workers.map((x) => x.start()),
 	]);
 }
@@ -63,9 +62,9 @@ export { config };
 
 export function saveConfig() {
 	config.proxies = db.proxies.map((x) => x.getConfig());
-	config.accounts = db.accounts.map((x) => x.getConfig());
+	config.accounts = db.accounts.filter((x) => x.status !== "notregistered").map((x) => x.getConfig()); // do not save unregistered accounts
 	config.emails = db.emails.map((x) => x.getConfig());
-	config.actions = db.actions.map((x) => x.getConfig());
+	config.actions = []; // db.actions.map((x) => x.getConfig()); // do not save actions
 	config.captchas = db.captchas.map((x) => x.getConfig());
 
 	fs.writeFileSync(configPath + ".temp", JSON.stringify(config, undefined, "\t"));

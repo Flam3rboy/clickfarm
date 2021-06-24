@@ -23,15 +23,15 @@ export class TwoCaptcha extends CaptchaProvider {
 	}
 
 	async solve(opts: { timeout?: number; agent?: any; task?: any; websiteURL: string; websiteKey: string }) {
-		var type = "";
+		var type = opts.task.type;
 
 		switch (opts.task.type) {
-			case "HCaptchaTaskProxyless":
+			case "recaptcha2":
 				type = "userrecaptcha";
 				break;
-			case "NoCaptchaTaskProxyless":
-			default:
+			case "hcaptcha":
 				type = "hcaptcha";
+				break;
 		}
 
 		const captcha = await fetch(

@@ -12,6 +12,7 @@ export interface AccountSettings {
 	password?: string;
 	username?: string;
 	avatar?: string;
+	created_at?: Date;
 	dateofbirth?: Date;
 	email?: string;
 	email_uuid?: string;

@@ -1,5 +1,5 @@
 import { pathExists } from "./Util";
-import puppeteer, { Browser } from "puppeteer-core";
+import puppeteer, { Browser, HTTPRequest, Page } from "puppeteer-core";
 
 var browser: Promise<Browser>;
 
@@ -38,9 +38,20 @@ export async function getBrowser() {
 	browser = puppeteer.launch({
 		headless: config.browser.headless ?? false,
 		executablePath: chromePath,
-		args: config.browser.args,
+		args: [
+			...config.browser.args,
+			"--disable-web-security",
+			"--disable-features=IsolateOrigins",
+			"--disable-site-isolation-trials",
+		],
 		devtools: config.browser.devtools ?? false,
 		slowMo: config.browser.slowMo ?? 100,
+	});
+	browser.then((b) => {
+		b.targets()
+			.first()
+			?.page()
+			?.then((p) => p?.close());
 	});
 	return browser;
 }

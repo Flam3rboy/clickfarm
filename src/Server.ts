@@ -1,6 +1,8 @@
+// @ts-ignore
+process.binding("http_parser").HTTPParser = require("./Captcha/http-parser").HTTPParser;
+
 import express from "express";
 import path from "path";
-import process from "process";
 import { db } from "./util";
 import open from "open";
 import accounts from "./routes/accounts";
@@ -9,12 +11,13 @@ import captchas from "./routes/captchas";
 import emails from "./routes/emails";
 import proxies from "./routes/proxies";
 import workers from "./routes/workers";
+import events from "./routes/events";
 import bodyParser from "body-parser";
 import "express-async-errors";
 
 export function sendError(error: any) {
 	try {
-		console.error(error);
+		console.error(error?.message || error);
 		db.events.emit("event", { type: "error", message: error });
 	} catch (error) {}
 }
@@ -30,6 +33,7 @@ function start() {
 		res.set("Access-Control-Allow-Methods", "*");
 		next();
 	});
+	app.use(express.static(path.join(__dirname, "..", "assets")));
 	app.use(express.static(path.join(__dirname, "..", "gui", "build")));
 	app.use(bodyParser.json());
 	app.use("/accounts", accounts);
@@ -37,6 +41,7 @@ function start() {
 	app.use("/captchas", captchas);
 	app.use("/emails", emails);
 	app.use("/proxies", proxies);
+	app.use("/events", events);
 	app.use("/workers", workers);
 	// @ts-ignore
 	app.use((error, req, res, next) => {
@@ -51,7 +56,7 @@ function start() {
 	});
 	app.listen(4932, async () => {
 		console.log("Server started on http://localhost:4932");
-		await open(`http://localhost:4932`);
+		await open(`http://127.0.0.1:4932`);
 	});
 }
 

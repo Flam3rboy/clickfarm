@@ -14,17 +14,19 @@ export class Worker {
 	}
 
 	async do() {
+		const db = require("../util/db").db;
+
 		while (true) {
 			if (this.state === "stopped") return;
 
-			var action = require("../util/db").db.actions.find((x: any) => x.status == "pending");
+			var action = db.actions.find((x: any) => x.status == "pending");
 			if (!action) break;
 
 			await action.do();
+
 			// TODO: delete action
 		}
 		this.state = "available";
-		db.events.emit("event", { type: "WORKER_DONE", id: this.uuid });
 	}
 
 	stop() {

@@ -16,8 +16,9 @@ export class EmailPool extends EventEmitter {
 	}
 
 	getProvider(username?: string) {
-		if (username) return new EmailDummyProvider(this.provider, username);
-		return new EmailDummyProvider(this.provider, makeid(10));
+		const domain = "@" + this.provider.email.split("@")[1];
+		if (username) return new EmailDummyProvider(this.provider, username + domain);
+		return new EmailDummyProvider(this.provider, makeid(10) + domain);
 	}
 
 	async close() {

@@ -3,8 +3,9 @@ export interface ActionConfig {
 	type: string;
 	uuid: string;
 	status: ActionStatus;
-	error?: any;
 	payload: any;
+	error?: any;
+	repeat?: number;
 }
 
 export type ActionStatus = "pending" | "inwork" | "done" | "error";
