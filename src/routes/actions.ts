@@ -13,8 +13,10 @@ router.get("/:id", (req, res) => {
 	res.json(db.actions.find((x) => x.uuid === req.params.id)?.getConfig());
 });
 
-router.post("/", check({ account_ids: [String], payload: Object, type: String }), (req, res) => {
+router.post("/", check({ account_ids: [String], payload: Object, type: String, $repeat: Number }), (req, res) => {
 	const { account_ids, payload, type } = req.body as { account_ids: string[]; payload: any; type: string };
+
+	db.actions = db.actions.filter((x) => x.type !== "done" && x.type !== "error");
 
 	for (const account_id of account_ids) {
 		// @ts-ignore
@@ -24,7 +26,7 @@ router.post("/", check({ account_ids: [String], payload: Object, type: String })
 
 	db.workers.forEach((x) => x.start());
 
-	res.json({ success: true });
+	res.json(db.actions.map((x) => x.getConfig()));
 });
 
 export default router;

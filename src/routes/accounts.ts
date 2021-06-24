@@ -7,7 +7,13 @@ import { AccountConfig } from "../types/Account";
 const router = Router();
 
 router.get("/", (req, res) => {
-	res.json(db.accounts.map((x) => ({ ...x.getConfig(), settings: undefined })));
+	res.json(
+		db.accounts.map((x) => {
+			const config = x.getConfig();
+
+			return { ...config, settings: { created_at: config.settings.created_at } };
+		})
+	);
 });
 
 router.get("/:id", (req, res) => {
@@ -25,7 +31,6 @@ router.post("/generate", check({ count: Number, type: String }), async (req, res
 		db.accounts.push(account);
 		ids.push(account.uuid);
 	}
-	await Promise.all(db.accounts.map((x) => x.intialized));
 
 	return res.json(ids);
 });
