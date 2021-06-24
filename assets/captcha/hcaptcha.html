@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<script src="https://hcaptcha.com/1/api.js?render=explicit"></script>
+	</head>
+	<body>
+		<div id="captcha"></div>
+
+		<script>
+			var search = Object.fromEntries(new URLSearchParams(location.search));
+
+			hcaptcha.render("captcha", {
+				sitekey: search.key,
+			});
+
+			var once = false;
+
+			Object.defineProperty(document.querySelector("[name=h-captcha-response]"), "value", {
+				get: () => "",
+				set: function (token) {
+					// Do your stuff
+					if (!token) return;
+					if (once) return;
+					once = true;
+
+					console.log("changed", token);
+
+					fetch("/captchas/solve/", {
+						method: "POST",
+						headers: {
+							"content-type": "application/json",
+						},
+						body: JSON.stringify({
+							token,
+							id: search.id,
+						}),
+					});
+				},
+			});
+
+			console.log(document.querySelector("[name=h-captcha-response]"));
+		</script>
+	</body>
+</html>
