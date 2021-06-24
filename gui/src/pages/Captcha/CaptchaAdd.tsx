@@ -54,13 +54,17 @@ export default function CaptchaAdd({ open, setOpen }: { open: boolean; setOpen: 
 				<FormControl>
 					<InputLabel>Captcha Provider</InputLabel>
 					<Select value={provider} onChange={(e) => setProvider(e.target.value as string)}>
+						<MenuItem value={"manual"}>Manual</MenuItem>
 						<MenuItem value={"2captcha"}>2Captcha</MenuItem>
 						<MenuItem value={"anti-captcha"}>AntiCaptcha</MenuItem>
 						<MenuItem value={"anti-captcha-trial"}>AntiCaptcha old</MenuItem>
+						<MenuItem value={"anti-captcha-proxy"}>AntiCaptcha Proxy (special setup needed)</MenuItem>
 					</Select>
 				</FormControl>
 
-				<TextField value={key} onChange={(e) => setKey(e.target.value)} label="API Key"></TextField>
+				{provider !== "manual" && (
+					<TextField value={key} onChange={(e) => setKey(e.target.value)} label="API Key"></TextField>
+				)}
 
 				{error && (
 					<Alert severity="error">

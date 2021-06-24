@@ -5,6 +5,7 @@ import { useContext, useState } from "react";
 import { StoreContext } from "../../util/Store";
 import CaptchaAdd from "./CaptchaAdd";
 import CaptchaDelete from "./CaptchaDelete";
+import CaptchaManual from "./CaptchaManual";
 
 export default function Captcha() {
 	const [context, setContext] = useContext(StoreContext);
@@ -22,6 +23,9 @@ export default function Captcha() {
 				<CaptchaDelete uuid={deleteCaptcha} setOpen={setDeleteCaptcha}></CaptchaDelete>
 
 				<div style={{ marginTop: "1rem" }}>
+					<CaptchaManual></CaptchaManual>
+					<br />
+
 					{(context.captchas || []).map((x) => (
 						<Card key={x.uuid}>
 							<CardContent>
