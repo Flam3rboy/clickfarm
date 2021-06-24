@@ -17,7 +17,6 @@ import {
 } from "@material-ui/core";
 import { Account } from "../../util/types";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
-import { TreeView, TreeItem } from "@material-ui/lab";
 import { StoreContext } from "../../util/Store";
 import { request } from "../../util/request";
 
@@ -34,17 +33,19 @@ export default function Action({
 	const [context, setContext] = useContext(StoreContext);
 	const [workers, setWorkers] = useState<string>(context.workers?.length || 1);
 	const [payload, setPayload] = useState<any>(null);
+	const [repeat, setRepeat] = useState(0);
 
 	async function execute() {
 		await request(`/workers/`, { method: "PUT", body: { count: workers } });
 
-		const body = { account_ids: selected.map((x) => x.uuid), type: selected.first()?.type, payload };
-		console.log(body);
+		const body = { account_ids: selected.map((x) => x.uuid), type: selected.first()?.type, payload, repeat };
 
-		await request(`/actions/`, {
+		const actions = await request(`/actions/`, {
 			method: "POST",
 			body,
 		});
+		setContext({ actions });
+		setOpen(false);
 	}
 
 	return (
@@ -59,16 +60,25 @@ export default function Action({
 					)}
 				</DialogContentText>
 				{!nothingSelected && (
-					<>
+					<div style={{ display: "flex", flexDirection: "column" }}>
 						{selected.find((x) => x.type === "discord") && <DiscordAction setPayload={setPayload} />}
 						<TextField
+							style={{ marginTop: "1rem" }}
 							type="number"
 							min={1}
 							value={workers}
 							onChange={(e) => setWorkers(Math.max(e.target.value, 1))}
 							label="Thread count"
 						/>
-					</>
+						<TextField
+							style={{ marginTop: "1rem" }}
+							type="number"
+							min={1}
+							value={repeat}
+							onChange={(e) => setRepeat(Math.max(e.target.value, 0))}
+							label="Repeat action per account"
+						/>
+					</div>
 				)}
 			</DialogContent>
 			<DialogActions>
@@ -86,6 +96,7 @@ export default function Action({
 function DiscordAction({ setPayload }: { setPayload: Dispatch<SetStateAction<any>> }) {
 	const [register, setRegister] = useState(false);
 	const [browser, setBrowser] = useState(false);
+	const [onlyUsername, setOnlyUsername] = useState(false);
 	const [verifyEmail, setverifyEmail] = useState(false);
 	const [invite, setInvite] = useState<string>(null);
 	const [uploadDateOfBirth, setUploadDateOfBirth] = useState(false);
@@ -105,11 +116,23 @@ function DiscordAction({ setPayload }: { setPayload: Dispatch<SetStateAction<any
 			payload.register = {
 				browser,
 				invite,
+				onlyUsername,
 			};
 		}
 
 		setPayload(payload);
-	}, [register, browser, verifyEmail, invite, uploadDateOfBirth, uploadAvatar, connect, updateUser, setPayload]);
+	}, [
+		register,
+		browser,
+		verifyEmail,
+		invite,
+		uploadDateOfBirth,
+		uploadAvatar,
+		connect,
+		updateUser,
+		setPayload,
+		onlyUsername,
+	]);
 
 	return (
 		<Accordion defaultExpanded>
@@ -126,6 +149,12 @@ function DiscordAction({ setPayload }: { setPayload: Dispatch<SetStateAction<any
 						<FormControlLabel
 							control={<Checkbox checked={browser} onChange={(e) => setBrowser(e.target.checked)} />}
 							label="Use browser"
+						/>
+						<FormControlLabel
+							control={
+								<Checkbox checked={onlyUsername} onChange={(e) => setOnlyUsername(e.target.checked)} />
+							}
+							label="Only username"
 						/>
 						<TextField
 							size="small"

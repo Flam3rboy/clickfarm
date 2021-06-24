@@ -37,11 +37,13 @@ export default function Dashboard() {
 
 	useEffect(() => {
 		request(`/accounts`).then((accounts) => setContext({ accounts }));
+		request(`/actions`).then((actions) => setContext({ actions }));
 		request(`/workers`).then((workers) => setContext({ workers }));
 		request(`/emails`).then((emails) => setContext({ emails }));
 		request(`/captchas`).then(({ total, providers }) =>
 			setContext({ captchas: providers, captchas_solved: total })
 		);
+		request(`/captchas/solve/`).then((captcha_tasks) => setContext({ captcha_tasks }));
 		request(`/proxies`).then((proxies) => setContext({ proxies }));
 	}, []);
 

@@ -54,7 +54,7 @@ export default function Generate({ open, setOpen }: { open: boolean; setOpen: Di
 					<TextField
 						value={count}
 						min={1}
-						onChange={(e) => setCount(Math.max(Number(e.target.value), 1))}
+						onChange={(e) => setCount(Math.max(e.target.value, 1))}
 						label="Amount"
 						type="number"
 						variant="outlined"

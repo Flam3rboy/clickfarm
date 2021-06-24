@@ -1,26 +1,40 @@
+/* eslint-disable no-fallthrough */
 import { Snackbar } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { events } from "../util/events";
+import { StoreContext } from "../util/Store";
 
 export default function Notifications() {
 	const [event, setEvent] = useState<any>(null);
 	const [timeout, changeTimeout] = useState<any>(null);
+	const [context, setContext] = useContext(StoreContext);
 
 	function eventDispatched(action: Event) {
 		clearTimeout(timeout);
-		console.log("event", action);
 		// @ts-ignore
-		const data = JSON.parse(action.data);
+		var data = JSON.parse(action.data);
+		var clearError = true;
+		console.log("event", data);
 		var severity = "info";
 		switch (data.type) {
 			case "ACTION_DONE":
 				severity = "success";
 
 				break;
-			case "ACTION_ERROR":
+			// @ts-ignore
 			case "error":
+				clearError = false;
+			case "ACTION_ERROR":
+				data = { message: JSON.stringify(data.message || data.toString()) };
 				severity = "error";
+				break;
+			case "CAPTCHA_REMOVE":
+				setContext({ captcha_tasks: context.captcha_tasks?.filter((x) => x.id !== data.id) });
+				return;
+			case "CAPTCHA_ADD":
+				setContext({ captcha_tasks: [...(context.captcha_tasks || []), data.payload] });
+				data = { message: "Captcha needs to be solved" };
 				break;
 			default:
 				break;
@@ -28,11 +42,13 @@ export default function Notifications() {
 
 		setEvent({ ...data, severity });
 
-		changeTimeout(
-			setTimeout(() => {
-				setEvent(null);
-			}, 3000)
-		);
+		if (clearError) {
+			changeTimeout(
+				setTimeout(() => {
+					setEvent(null);
+				}, 3000)
+			);
+		}
 	}
 
 	function onError(error: Event) {

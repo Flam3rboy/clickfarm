@@ -60,7 +60,7 @@ export interface Email {
 
 export type EmailService = "imap" | "gmail";
 
-export interface ActionConfig {
+export interface Action {
 	account_id: string;
 	type: string;
 	uuid: string;
@@ -71,7 +71,7 @@ export interface ActionConfig {
 
 export type ActionStatus = "pending" | "inwork" | "done" | "error";
 
-export interface DiscordAction {
+export interface DiscordAction extends Action {
 	register?: {
 		browser?: boolean;
 		invite?: string;

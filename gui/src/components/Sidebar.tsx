@@ -1,5 +1,5 @@
 // @ts-nocheck
-import React from "react";
+import React, { useContext } from "react";
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import SupervisorAccountIcon from "@material-ui/icons/SupervisorAccount";
@@ -17,9 +17,13 @@ import {
 	Toolbar,
 	SvgIcon,
 	Tooltip,
+	FormControlLabel,
+	Icon,
+	Switch,
 } from "@material-ui/core";
 import { useState } from "react";
 import { Link as RouterLink, LinkProps as RouterLinkProps } from "react-router-dom";
+import { StoreContext } from "../util/Store";
 
 interface ListItemLinkProps {
 	icon?: React.ReactElement;
@@ -55,6 +59,7 @@ export function ListItemLink(props: ListItemLinkProps) {
 
 export default function Sidebar() {
 	const [open, setOpen] = useState(false);
+	const [context, setContext] = useContext(StoreContext);
 
 	return (
 		<Drawer className={!open ? "MuiDrawer-minimized" : ""} variant="permanent" anchor="left">
@@ -92,6 +97,18 @@ export default function Sidebar() {
 					}
 				/>
 				<ListItemLink tooltip={!open} to="/proxies" primary="Proxy" icon={<DnsIcon />} />
+				<ListItem>
+					<FormControlLabel
+						label={"Dark Mode"}
+						control={
+							<Switch
+								color="default"
+								checked={context.darkMode}
+								onChange={() => setContext({ darkMode: !context.darkMode })}
+							></Switch>
+						}
+					></FormControlLabel>
+				</ListItem>
 			</List>
 		</Drawer>
 	);

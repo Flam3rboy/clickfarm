@@ -139,3 +139,11 @@ html {
 .page.overview .MuiGridList-root {
 	overflow: hidden;
 }
+
+.MuiToolbar-gutters {
+	padding: 0 !important;
+}
+
+.action-progress .status {
+	height: 90px;
+}
