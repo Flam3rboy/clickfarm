@@ -35,6 +35,7 @@ export abstract class Account {
 
 	constructor(props: AccountOptions) {
 		if (props.dateofbirth) props.dateofbirth = new Date(props.dateofbirth);
+		if (props.created_at) props.created_at = new Date(props.created_at);
 		if (!props.dateofbirth) props.dateofbirth = new Date(Date.now() - YEAR * 18 - Math.random() * 40 * YEAR); // random date between 18 and 58
 		if (!props.password) props.password = makeid(10);
 		if (!props.username) props.username = randomUsername();
@@ -77,6 +78,7 @@ export abstract class Account {
 			dateofbirth: this.dateofbirth,
 			email: this.emailProvider?.email,
 			email_uuid: this.emailProvider?.uuid,
+			created_at: this.created_at,
 		};
 	}
 
